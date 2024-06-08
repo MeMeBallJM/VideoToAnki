@@ -41,26 +41,31 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        Cli prompt = new Cli(args);
+        // Cli prompt = new Cli(args);
 
-        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
-        HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
+        // HttpClient client =
+        // HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
+        // HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
 
-        WordCompiler wordCompiler = new WordCompiler(videoIds, client);
+        // WordCompiler wordCompiler = new WordCompiler(videoIds, client);
 
-        ArrayList<String> wordList = wordCompiler.wordList();
+        // ArrayList<String> wordList = wordCompiler.wordList();
+
+        // Dict russianDict = new RussianDict();
+        // AnkiFormatter.audioAll(wordList, russianDict, client);
+        // String output = AnkiFormatter.formatAll(wordList, russianDict);
+
+        // try {
+        // FileWriter file = new FileWriter("output.txt");
+        // file.write(output);
+        // file.close();
+        // } catch (Exception e) {
+        // // TODO: handle exception
+        // }
 
         Dict russianDict = new RussianDict();
-        AnkiFormatter.audioAll(wordList, russianDict, client);
-        String output = AnkiFormatter.formatAll(wordList, russianDict);
 
-        try {
-            FileWriter file = new FileWriter("output.txt");
-            file.write(output);
-            file.close();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+        russianDict.examples("как");
 
     }
 }

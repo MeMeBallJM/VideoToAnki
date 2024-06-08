@@ -1,10 +1,16 @@
 import java.io.File;
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class RussianDict extends Dict {
 
@@ -56,7 +62,24 @@ public class RussianDict extends Dict {
 
     @Override
     public ArrayList<String> examples(String word) {
-        // TODO Auto-generated method stub
+
+        try {
+            Document doc = Jsoup.connect("https://en.openrussian.org/ru/как").get();
+
+            Elements russianSentences = doc.select("span.ru");
+            for (Element russianSentence : russianSentences) {
+                // TODO
+            }
+
+            Elements englishSentences = doc.select("li.sentence span.tl");
+            for (Element englishSentence : englishSentences) {
+                // TODO
+            }
+
+        } catch (IOException error) {
+            System.out.println(error);
+        }
+
         return null;
     }
 
