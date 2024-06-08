@@ -1,16 +1,13 @@
-import java.net.URI;
-import java.net.http.HttpResponse.*;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.net.http.*;
 import java.util.regex.*;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashSet;
 
 public class App {
 
-    static final String programName = "card";
-
-    public static String videoIds(String link) {
+    private static String videoId(String link) {
         String pattern = "(?:watch\\?v=|youtu\\.be\\/|\\?list=)([A-z|0-9|-]*).*";
         Pattern regex = Pattern.compile(pattern);
         Matcher matcher = regex.matcher(link);
@@ -21,15 +18,15 @@ public class App {
         return stub;
     }
 
-    public static HashSet<String> playlistVideoIds(String link, HttpClient client) throws Exception {
+    private static HashSet<String> playlistVideoIds(String link, HttpClient client) throws Exception {
 
         HashSet<String> stubs = new HashSet<String>();
 
         if (!link.matches(".*playlist.*")) {
-            stubs.add(videoIds(link));
+            stubs.add(videoId(link));
         } else {
-            String reqUrl = String.format("https://www.youtube.com/playlist?list=%s", videoIds(link));
-            String response = Client.httpGet(reqUrl, client);
+            String reqUrl = String.format("https://www.youtube.com/playlist?list=%s", videoId(link));
+            String response = Client.httpGetSync(reqUrl, client);
 
             String pattern = "watch\\?v=([A-Za-z0-9_-|0-9]{11})";
             Pattern regex = Pattern.compile(pattern);
@@ -46,7 +43,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         Cli prompt = new Cli(args);
 
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
         HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
 
         WordCompiler wordCompiler = new WordCompiler(videoIds, client);
@@ -54,15 +51,15 @@ public class App {
         ArrayList<String> wordList = wordCompiler.wordList();
 
         Dict russianDict = new RussianDict();
+        AnkiFormatter.audioAll(wordList, russianDict, client);
+        String output = AnkiFormatter.formatAll(wordList, russianDict);
 
-        for (String word : wordList) {
-
-            System.out.println(word);
-            ArrayList<String> translations = russianDict.translate(word);
-
-            for (String translation : translations) {
-                System.out.println(translation);
-            }
+        try {
+            FileWriter file = new FileWriter("output.txt");
+            file.write(output);
+            file.close();
+        } catch (Exception e) {
+            // TODO: handle exception
         }
 
     }

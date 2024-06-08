@@ -1,18 +1,12 @@
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class Dict {
 
-    public enum Gender {
-        Masculine,
-        Feminine,
-        Neuter,
-        Plural,
-    }
-
-    public abstract ArrayList<String> translate(String word);
-
-    // TODO find type for the audio;
-    // public abstract pronunciation();
+    public abstract CompletableFuture<ArrayList<String>> translate(String word);
 
     public abstract ArrayList<String> examples(String word);
 
@@ -20,9 +14,6 @@ public abstract class Dict {
 
     public abstract ArrayList<String[]> conjugation(String word);
 
-    // TODO actually make this, w/ the right type
-    // public Image image(String word) {
-
-    // }
+    public abstract CompletableFuture<Void> pronunciation(String word, HttpClient client);
 
 }

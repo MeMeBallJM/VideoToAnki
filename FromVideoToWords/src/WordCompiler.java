@@ -15,7 +15,7 @@ public class WordCompiler {
         for (String videoId : videoIds) {
 
             String link = String.format("https://youtubetranscript.com/?server_vid2=%s", videoId);
-            String response = Client.httpGet(link, client);
+            String response = Client.httpGetSync(link, client);
 
             createWordList(response, words);
 
@@ -26,10 +26,23 @@ public class WordCompiler {
 
     public ArrayList<String> wordList() {
         ArrayList<String> wordList = new ArrayList<>();
-        for (String word : words.keySet()) {
-            wordList.add(word);
 
+        for (String word : words.keySet()) {
+            boolean inserted = false;
+            for (String other : wordList) {
+                if (words.get(other) < words.get(word)) {
+                    wordList.add(wordList.indexOf(other), word);
+                    inserted = true;
+                    break;
+                }
+            }
+
+            if (!inserted) {
+                wordList.add(word);
+                inserted = true;
+            }
         }
+
         return wordList;
     }
 
