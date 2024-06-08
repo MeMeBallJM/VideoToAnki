@@ -33,7 +33,8 @@ public class LoadingBar {
     }
 
     public void tick() {
-        System.out.printf("\r%-25s %d%% %s, %d/%d", message, (int) (100 * percentDone()), progressBar(done, total),
+        System.out.printf("\r%-25s %3s%% %s, %d/%d", message, Integer.toString((int) (100 * percentDone())),
+                progressBar(done, total),
                 done, total);
         this.done += 1;
     }
