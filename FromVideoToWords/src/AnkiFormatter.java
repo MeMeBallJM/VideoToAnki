@@ -74,7 +74,7 @@ public class AnkiFormatter {
 
         ArrayList<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        LoadingBar loadingBar = new LoadingBar("Fetching audio", words.size());
+        LoadingBar loadingBar = new LoadingBar("Fetching audio", words.size() + 1);
         for (String word : words) {
             futures.add(dictionary.pronunciation(word, client));
             loadingBar.tick();
@@ -89,6 +89,8 @@ public class AnkiFormatter {
                 }
             }
         }
+
+        loadingBar.tick();
 
         System.out.println();
     }
