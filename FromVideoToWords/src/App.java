@@ -88,6 +88,11 @@ public class App {
     public static void main(String[] args) throws Exception {
         Cli prompt = new Cli(args);
 
+        if (!prompt.language().equals("russian")) {
+            System.out.println("Currently only Russian is supported, Spanish coming soon.");
+            System.exit(1);
+        }
+
         HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
         HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
 
