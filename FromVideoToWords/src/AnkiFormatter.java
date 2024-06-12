@@ -1,4 +1,6 @@
 import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -18,11 +20,19 @@ public class AnkiFormatter {
                 return null;
             }
 
+            ArrayList<String> examples = dictionary.examples(word);
+
             String front = String.format("%s [sound:%s.mp3]", word, word);
 
             String back = new String();
             for (String translation : translations) {
                 back += String.format(", %s", translation);
+            }
+            back += String.format("<br><br> <img src=\"%s.jpeg\">", word);
+
+            if (examples.size() >= 1) {
+                String spilt[] = examples.get(0).split("\n");
+                back += String.format("<br><br>%s<br>%s", spilt[0], spilt[1]);
             }
 
             return String.format("%s\t%s", front, back.substring(1));
@@ -70,17 +80,60 @@ public class AnkiFormatter {
         return all;
     }
 
-    static public void audioAll(ArrayList<String> words, Dict dictionary, HttpClient client) {
+    static public void imageAll(ArrayList<String> words, Dict dictionary, HttpClient client, String dst) {
+
+        LoadingBar loadingBar = new LoadingBar("Fetching images", words.size() * 3);
+
+        ArrayList<CompletableFuture<CompletableFuture<HttpResponse<Path>>>> linksFuture = new ArrayList<>();
+        ArrayList<CompletableFuture<HttpResponse<Path>>> videosFuture = new ArrayList<>();
+
+        for (String word : words) {
+            String out = String.format("%s/%s.jpeg", dst, word);
+            // System.out.printf("\n%s\n", out);
+            linksFuture.add(dictionary.image(word, client, out));
+            loadingBar.tick();
+        }
+
+        for (CompletableFuture<CompletableFuture<HttpResponse<Path>>> future : linksFuture) {
+            try {
+                loadingBar.tick();
+                videosFuture.add(future.get(10, TimeUnit.SECONDS));
+            } catch (InterruptedException | ExecutionException | CancellationException error) {
+                // Do nothing
+            } catch (TimeoutException error) {
+                future.cancel(true);
+            }
+
+        }
+
+        for (CompletableFuture<HttpResponse<Path>> future : videosFuture) {
+            try {
+                loadingBar.tick();
+                future.get(10, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | CancellationException error) {
+                // Do nothing
+            } catch (TimeoutException error) {
+                future.cancel(true);
+            }
+
+        }
+
+        loadingBar.complete();
+
+    }
+
+    static public void audioAll(ArrayList<String> words, Dict dictionary, HttpClient client, String dst) {
 
         ArrayList<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        LoadingBar loadingBar = new LoadingBar("Fetching audio", words.size() + 1);
+        LoadingBar loadingBar = new LoadingBar("Fetching audio", words.size() * 2);
         for (String word : words) {
-            futures.add(dictionary.pronunciation(word, client));
+            futures.add(dictionary.pronunciation(word, client, dst));
             loadingBar.tick();
         }
 
         for (CompletableFuture<Void> future : futures) {
+            loadingBar.tick();
             try {
                 future.get(3, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException | CancellationException error) {
@@ -89,8 +142,6 @@ public class AnkiFormatter {
                 }
             }
         }
-
-        loadingBar.tick();
 
         System.out.println();
     }

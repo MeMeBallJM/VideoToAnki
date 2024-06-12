@@ -25,6 +25,7 @@ public class WordCompiler {
     }
 
     public ArrayList<String> wordList() {
+
         ArrayList<String> wordList = new ArrayList<>();
 
         for (String word : words.keySet()) {

@@ -40,9 +40,16 @@ public class LoadingBar {
     }
 
     public void complete() {
-        while (done < total) {
+        while (done <= total) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException error) {
+                // Skip the sleep
+            }
             tick();
         }
+
+        System.out.println();
     }
 
 }

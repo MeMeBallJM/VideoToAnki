@@ -1,9 +1,13 @@
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.http.*;
 import java.util.regex.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Scanner;
 
 public class App {
 
@@ -41,31 +45,64 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        // Cli prompt = new Cli(args);
+        Cli prompt = new Cli(args);
 
-        // HttpClient client =
-        // HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
-        // HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
+        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
+        HashSet<String> videoIds = playlistVideoIds(prompt.link(), client);
 
-        // WordCompiler wordCompiler = new WordCompiler(videoIds, client);
+        WordCompiler wordCompiler = new WordCompiler(videoIds, client);
 
-        // ArrayList<String> wordList = wordCompiler.wordList();
+        ArrayList<String> wordList = wordCompiler.wordList();
 
-        // Dict russianDict = new RussianDict();
-        // AnkiFormatter.audioAll(wordList, russianDict, client);
-        // String output = AnkiFormatter.formatAll(wordList, russianDict);
+        for (String word : wordList) {
+            System.out.println(word);
 
-        // try {
-        // FileWriter file = new FileWriter("output.txt");
-        // file.write(output);
-        // file.close();
-        // } catch (Exception e) {
-        // // TODO: handle exception
-        // }
+        }
+
+        String dst = "/Users/joshualevymorton/Library/Application Support/Anki2/User 1/collection.media";
 
         Dict russianDict = new RussianDict();
+        AnkiFormatter.audioAll(wordList, russianDict, client, dst);
+        AnkiFormatter.imageAll(wordList, russianDict, client, dst);
+        String output = AnkiFormatter.formatAll(wordList, russianDict);
 
-        russianDict.examples("как");
+        try {
+            FileWriter file = new FileWriter("output.txt");
+            file.write(output);
+            file.close();
+        } catch (Exception error) {
+            System.out.println("Failed to create file");
+        }
+
+        @SuppressWarnings("resource")
+        Scanner input = new Scanner(System.in);
+        while (true) {
+            System.out.print("Find word: ");
+            String word = input.nextLine();
+
+            Scanner fileOutput = new Scanner(new File("output.txt"));
+
+            int count = 1;
+            boolean wordFound = false;
+            while (fileOutput.hasNextLine()) {
+                String line = fileOutput.nextLine();
+                if (line.startsWith(word + " ")) {
+                    System.out.printf("%s is the %dth most common word from the videos.\n", word, count);
+                    wordFound = true;
+                    break;
+                }
+
+                count += 1;
+            }
+
+            if (!wordFound) {
+                System.out.printf("Couldn't find %s from the cards\n", word);
+
+            }
+
+            fileOutput.close();
+
+        }
 
     }
 }

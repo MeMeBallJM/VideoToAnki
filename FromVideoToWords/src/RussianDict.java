@@ -47,14 +47,14 @@ public class RussianDict extends Dict {
     }
 
     @Override
-    public CompletableFuture<Void> pronunciation(String word, HttpClient client) {
+    public CompletableFuture<Void> pronunciation(String word, HttpClient client, String dst) {
         String link = String.format("https://api.openrussian.org/read/ru/%s", word);
 
         String fileName = String.format(
-                "/Users/joshualevymorton/Desktop/testing_media/%s.mp3", word);
+                "%s/%s.mp3", dst, word);
 
         try {
-            return Client.httpGetAudio(link, client, fileName).thenApply(result -> null);
+            return Client.httpGetFile(link, client, fileName).thenApply(result -> null);
         } catch (Exception error) {
             return new CompletableFuture<>();
         }
@@ -64,23 +64,35 @@ public class RussianDict extends Dict {
     public ArrayList<String> examples(String word) {
 
         try {
-            Document doc = Jsoup.connect("https://en.openrussian.org/ru/как").get();
 
+            String link = String.format("https://en.openrussian.org/ru/%s", word);
+
+            Document doc = Jsoup.connect(link).get();
+
+            ArrayList<String> examples = new ArrayList<>();
+
+            ArrayList<String> russianText = new ArrayList<>();
             Elements russianSentences = doc.select("span.ru");
             for (Element russianSentence : russianSentences) {
-                // TODO
+                russianText.add(russianSentence.text());
             }
 
+            ArrayList<String> englishText = new ArrayList<>();
             Elements englishSentences = doc.select("li.sentence span.tl");
             for (Element englishSentence : englishSentences) {
-                // TODO
+                englishText.add(englishSentence.text());
             }
 
+            for (int i = 0; i < russianSentences.size(); i++) {
+                examples.add(String.format("%s\n%s", russianText.get(i), englishText.get(i)));
+            }
+
+            return examples;
+
         } catch (IOException error) {
-            System.out.println(error);
+            return new ArrayList<>();
         }
 
-        return null;
     }
 
     @Override
