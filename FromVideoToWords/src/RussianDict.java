@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
@@ -16,6 +15,9 @@ public class RussianDict extends Dict {
 
     HttpClient client = HttpClient.newHttpClient();
 
+    // Translates a russian word into english
+    // @param the russian word
+    // @returns the english translations
     @Override
     public CompletableFuture<ArrayList<String>> translate(String word) {
         try {
@@ -46,6 +48,9 @@ public class RussianDict extends Dict {
 
     }
 
+    // Get the pronouncation of the word
+    // @param the word
+    // @returns nothing (future really)
     @Override
     public CompletableFuture<Void> pronunciation(String word, HttpClient client, String dst) {
         String link = String.format("https://api.openrussian.org/read/ru/%s", word);
@@ -60,6 +65,9 @@ public class RussianDict extends Dict {
         }
     }
 
+    // Gets an example of the word being used
+    // @param the word
+    // @returns some examples
     @Override
     public ArrayList<String> examples(String word) {
 

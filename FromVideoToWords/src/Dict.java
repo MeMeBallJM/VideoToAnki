@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+// Genaric dictionary type
 public abstract class Dict {
 
     public abstract CompletableFuture<ArrayList<String>> translate(String word);
@@ -20,6 +21,7 @@ public abstract class Dict {
 
     public abstract CompletableFuture<Void> pronunciation(String word, HttpClient client, String dst);
 
+    // Grabs an image from the internet using the first image found by google
     public CompletableFuture<CompletableFuture<HttpResponse<Path>>> image(String word, HttpClient client, String dst) {
 
         String link = String.format("https://www.google.com/search?q=%s&tbm=isch", word);

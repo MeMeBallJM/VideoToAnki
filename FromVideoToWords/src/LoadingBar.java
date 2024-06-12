@@ -1,3 +1,6 @@
+// A pretty loading bar
+// using tick() to progress the bar
+
 public class LoadingBar {
 
     private int done = 0;

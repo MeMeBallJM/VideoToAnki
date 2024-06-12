@@ -5,10 +5,14 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Takes a bunch of yt ids and fetching the transcripts from the videos
 public class WordCompiler {
 
     public HashMap<String, Integer> words = new HashMap<>();
 
+    // Takes a set of video ids and gets transcripts
+    // @param a set of video ids and a http client
+    // @returns a Self
     public WordCompiler(HashSet<String> videoIds, HttpClient client) throws Exception {
 
         LoadingBar loadingBar = new LoadingBar("Fetching transcripts", videoIds.size());
@@ -24,6 +28,9 @@ public class WordCompiler {
         System.out.println();
     }
 
+    // Returns the list of words from the videos in order of commoness
+    // @param nothing
+    // @returns the list of words
     public ArrayList<String> wordList() {
 
         ArrayList<String> wordList = new ArrayList<>();
@@ -47,6 +54,9 @@ public class WordCompiler {
         return wordList;
     }
 
+    // Used internally, gets the words from transcripts
+    // @param response from a http, current words
+    // @returns map of words and their counts (how often they are used)
     private HashMap<String, Integer> createWordList(String response, HashMap<String, Integer> running) {
 
         HashMap<String, Integer> words = running;

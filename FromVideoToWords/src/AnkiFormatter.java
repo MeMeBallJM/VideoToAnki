@@ -8,8 +8,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+// Using a dictionary it formats an Anki card
 public class AnkiFormatter {
 
+    // formats a single anki card
+    // @param the word for the card, a dict
+    // @returns the anki string formatted
     static private CompletableFuture<String> format(String word, Dict dictionary) {
 
         CompletableFuture<ArrayList<String>> translationsFuture = dictionary.translate(word);
@@ -39,6 +43,9 @@ public class AnkiFormatter {
         });
     }
 
+    // Formats a list of words
+    // @param the list of words to format (into Anki format), a dictionary
+    // @returns the formatted Anki string
     static public String formatAll(ArrayList<String> words, Dict dictionary) {
 
         LoadingBar loadingBar = new LoadingBar("Translating words", words.size());
@@ -80,6 +87,10 @@ public class AnkiFormatter {
         return all;
     }
 
+    // Creates images for an Anki deck
+    // @param the words for the images, a dictionary, an http client and the place
+    // to put the images
+    // @returns nothing
     static public void imageAll(ArrayList<String> words, Dict dictionary, HttpClient client, String dst) {
 
         LoadingBar loadingBar = new LoadingBar("Fetching images", words.size() * 3);
@@ -122,6 +133,10 @@ public class AnkiFormatter {
 
     }
 
+    // Gets audio for an Anki deck
+    // @param the words for the audio, a dictionary, an http client and the location
+    // to put the images
+    // @returns nothing
     static public void audioAll(ArrayList<String> words, Dict dictionary, HttpClient client, String dst) {
 
         ArrayList<CompletableFuture<Void>> futures = new ArrayList<>();

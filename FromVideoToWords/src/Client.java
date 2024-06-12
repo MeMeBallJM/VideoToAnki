@@ -4,8 +4,10 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.net.http.*;
 
+// Class to help make http calls
 public class Client {
 
+        // Gets content from page (blocking (very slow))
         public static String httpGetSync(String uri, HttpClient client) throws Exception {
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(new URI(uri))
@@ -17,6 +19,7 @@ public class Client {
                 return response.body();
         }
 
+        // Gets content from page (non-blocking (not very slow, but pain))
         public static CompletableFuture<HttpResponse<String>> httpGet(String uri, HttpClient client) throws Exception {
                 HttpRequest request = HttpRequest.newBuilder()
                                 .uri(new URI(uri))
@@ -28,6 +31,8 @@ public class Client {
                 return response;
         }
 
+        // Gets media (images or audio) from page (non-blocking (not very slow, but
+        // pain))
         public static CompletableFuture<HttpResponse<Path>> httpGetFile(String uri, HttpClient client, String dst)
                         throws Exception {
                 HttpRequest request = HttpRequest.newBuilder()

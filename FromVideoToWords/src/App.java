@@ -1,18 +1,18 @@
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStream;
 import java.net.http.*;
 import java.util.regex.*;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Scanner;
 
 public class App {
 
     static Scanner input = new Scanner(System.in);
 
+    // Gets the video yt id
+    // @param the link
+    // @returns the yt id
     private static String videoId(String link) {
         String pattern = "(?:watch\\?v=|youtu\\.be\\/|\\?list=)([A-z|0-9|-]*).*";
         Pattern regex = Pattern.compile(pattern);
@@ -24,6 +24,9 @@ public class App {
         return stub;
     }
 
+    // gets all the youtube ids from a yt playlist
+    // @param the playlist link
+    // @returns a list of yt ids
     private static HashSet<String> playlistVideoIds(String link, HttpClient client) throws Exception {
 
         HashSet<String> stubs = new HashSet<String>();
@@ -46,6 +49,9 @@ public class App {
         return stubs;
     }
 
+    // Prompts the user to search for a word that was added
+    // @param nothing
+    // @returns nothing
     private static void searchForWord() throws Exception {
         System.out.print("Find word: ");
         String word = input.nextLine();
