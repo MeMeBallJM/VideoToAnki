@@ -11,6 +11,8 @@ import java.util.Scanner;
 
 public class App {
 
+    static Scanner input = new Scanner(System.in);
+
     private static String videoId(String link) {
         String pattern = "(?:watch\\?v=|youtu\\.be\\/|\\?list=)([A-z|0-9|-]*).*";
         Pattern regex = Pattern.compile(pattern);
@@ -44,6 +46,39 @@ public class App {
         return stubs;
     }
 
+    private static void searchForWord() throws Exception {
+        System.out.print("Find word: ");
+        String word = input.nextLine();
+
+        if (word.equals("exit")) {
+            return;
+        }
+
+        Scanner fileOutput = new Scanner(new File("output.txt"));
+
+        int count = 1;
+        boolean wordFound = false;
+        while (fileOutput.hasNextLine()) {
+            String line = fileOutput.nextLine();
+            if (line.startsWith(word + " ")) {
+                System.out.printf("%s is the %dth most common word from the videos.\n", word, count);
+                wordFound = true;
+                break;
+            }
+
+            count += 1;
+        }
+
+        if (!wordFound) {
+            System.out.printf("Couldn't find %s from the cards\n", word);
+        }
+
+        fileOutput.close();
+
+        searchForWord();
+
+    }
+
     public static void main(String[] args) throws Exception {
         Cli prompt = new Cli(args);
 
@@ -53,11 +88,6 @@ public class App {
         WordCompiler wordCompiler = new WordCompiler(videoIds, client);
 
         ArrayList<String> wordList = wordCompiler.wordList();
-
-        for (String word : wordList) {
-            System.out.println(word);
-
-        }
 
         String dst = "/Users/joshualevymorton/Library/Application Support/Anki2/User 1/collection.media";
 
@@ -74,35 +104,7 @@ public class App {
             System.out.println("Failed to create file");
         }
 
-        @SuppressWarnings("resource")
-        Scanner input = new Scanner(System.in);
-        while (true) {
-            System.out.print("Find word: ");
-            String word = input.nextLine();
-
-            Scanner fileOutput = new Scanner(new File("output.txt"));
-
-            int count = 1;
-            boolean wordFound = false;
-            while (fileOutput.hasNextLine()) {
-                String line = fileOutput.nextLine();
-                if (line.startsWith(word + " ")) {
-                    System.out.printf("%s is the %dth most common word from the videos.\n", word, count);
-                    wordFound = true;
-                    break;
-                }
-
-                count += 1;
-            }
-
-            if (!wordFound) {
-                System.out.printf("Couldn't find %s from the cards\n", word);
-
-            }
-
-            fileOutput.close();
-
-        }
+        searchForWord();
 
     }
 }
